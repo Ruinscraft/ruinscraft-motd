@@ -46,6 +46,7 @@ public interface MotdStorage {
         };
     }
 
-    default void shutdown() {}
+    default void shutdown() {
+    }
 
 }

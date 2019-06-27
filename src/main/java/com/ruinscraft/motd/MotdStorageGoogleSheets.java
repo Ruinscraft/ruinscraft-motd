@@ -45,7 +45,7 @@ public class MotdStorageGoogleSheets implements MotdStorage {
         this.A1_query = A1_query;
 
         /* Cache update task */
-        MotdPlugin.get().getProxy().getScheduler().schedule(MotdPlugin.get(), new CacheUpdate(), 0L, 1L, TimeUnit.HOURS);
+        MotdPlugin.get().getServer().getScheduler().runTaskTimer(MotdPlugin.get(), new CacheUpdate(), 0L, TimeUnit.HOURS.toMillis(1));
     }
 
     private final class CacheUpdate implements Runnable {
@@ -90,35 +90,27 @@ public class MotdStorageGoogleSheets implements MotdStorage {
     }
 
     public void updateCache() {
-        MotdPlugin.get().getProxy().getScheduler().runAsync(MotdPlugin.get(), new CacheUpdate());
+        MotdPlugin.get().getServer().getScheduler().runTaskAsynchronously(MotdPlugin.get(), new CacheUpdate());
     }
 
     @Override
     public Callable<List<String>> getFirstLines() {
-        return () -> {
-            return firstLineCache;
-        };
+        return () -> firstLineCache;
     }
 
     @Override
     public Callable<List<String>> getSecondLineAnnouncements() {
-        return () -> {
-            return secondLineAnnouncementsCache;
-        };
+        return () -> secondLineAnnouncementsCache;
     }
 
     @Override
     public Callable<List<String>> getSecondLineTagLines() {
-        return () -> {
-            return secondLineTagLinesCache;
-        };
+        return () -> secondLineTagLinesCache;
     }
 
     @Override
     public Callable<List<String>> getSecondLineTips() {
-        return () -> {
-            return secondLineTipsCache;
-        };
+        return () -> secondLineTipsCache;
     }
 
 }

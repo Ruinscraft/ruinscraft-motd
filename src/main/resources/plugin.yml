@@ -1,0 +1,9 @@
+name: ${name}
+version: ${version}
+main: ${mainClass}
+author: royalkingkb
+api-version: 1.13
+
+commands:
+  ruinscraft-motd:
+    permission: ruinscraft.command.motd

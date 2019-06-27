@@ -1,13 +1,12 @@
 package com.ruinscraft.motd;
 
-import com.google.common.io.ByteStreams;
-import net.md_5.bungee.api.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Properties;
 
-public class MotdPlugin extends Plugin {
+public class MotdPlugin extends JavaPlugin {
 
     private MotdStorage motdStorage;
 
@@ -19,38 +18,21 @@ public class MotdPlugin extends Plugin {
     public void onEnable() {
         singleton = this;
 
-        getDataFolder().mkdirs();
+        saveDefaultConfig();
 
-        File configFile = new File(getDataFolder(), "config.properties");
+        final String sheetId = getConfig().getString("google-sheet-id");
+        final String A1_query = getConfig().getString("google-sheet-A1-query");
 
-        if (!configFile.exists()) {
-            try {
-                configFile.createNewFile();
-
-                try (InputStream is = getResourceAsStream("config.properties");
-                     OutputStream os = new FileOutputStream(configFile)) {
-                    ByteStreams.copy(is, os);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /* Only storage implementation is Google Sheets for now */
         try {
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(configFile));
-
-            final String sheetId = properties.getProperty("google-sheet-id");
-            final String A1_query = properties.getProperty("google-sheet-A1-query");
-
             motdStorage = new MotdStorageGoogleSheets(new File(getDataFolder(), "credentials.json"), sheetId, A1_query);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
 
-        getProxy().getPluginManager().registerListener(this, new PingListener());
-        getProxy().getPluginManager().registerCommand(this, new MotdCommand());
+        getCommand("ruinscraft-motd").setExecutor(new MotdCommand());
+        getServer().getPluginManager().registerEvents(new PingListener(), this);
     }
 
     @Override
